@@ -1,4 +1,4 @@
-# rss_feed_-aggregator
+# rss_feed_aggregator
 
 We're going to build an RSS feed aggregator in Go! It's a web server that allows clients to:
 
