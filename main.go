@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"rss_feed_aggregator/internal/database"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
@@ -19,6 +20,12 @@ type apiConfig struct {
 }
 
 func main() {
+	// feed, err := urlToFeed("https://blog.boot.dev/index.xml")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(feed)
+
 	godotenv.Load(".env")
 
 	portString := os.Getenv("PORT")
@@ -36,9 +43,12 @@ func main() {
 		log.Fatal("Can't connect to database", err)
 	}
 
+	db := database.New(conn)
 	apiCfg := apiConfig{
-		DB: database.New(conn),
+		DB: db,
 	}
+
+	go startScraping(db, 10, time.Minute)
 
 	r := chi.NewRouter()
 
