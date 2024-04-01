@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"rss_feed_aggregator/internal/database"
 	"time"
@@ -14,12 +15,21 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 	type parameters struct {
 		Name string `json:"name"`
 	}
+
 	decoder := json.NewDecoder(r.Body)
 
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
+		log.Printf("Error parsing JSON: %s\n", err)
 		respondWithError(w, 400, fmt.Sprintf("Error parsing JSON: %s", err))
+		return
+	}
+
+	fmt.Printf("Received request with name: %s\n", params.Name)
+
+	if params.Name == "" {
+		respondWithError(w, 400, fmt.Sprintf("Error user cannot be null: %s", err))
 		return
 	}
 
@@ -29,6 +39,7 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
 	})
+
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprintf("Error while creating user: %s", err))
 		return

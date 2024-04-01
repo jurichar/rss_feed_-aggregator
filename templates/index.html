@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed Aggregator</title>
+</head>
+
+<body>
+    <h1>Feed Aggregator</h1>
+    <form id="userForm" action="/v1/users" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="name">
+        <button type="submit">Create User</button>
+    </form>
+
+    <script>
+        let api_key = '';
+
+        document.getElementById('userForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            fetch('/v1/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: document.getElementById('username').value
+                })
+            })
+                .then(response => response.json())
+                .then(response => {
+                    api_key = response.api_key;
+                    const p = document.createElement('p');
+                    p.textContent = `API Key: ${response.api_key}`;
+                    document.body.appendChild(p);
+                });
+        });
+    </script>
+
+    <h2>Users</h2>
+</body>
+
+</html>
